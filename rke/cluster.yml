@@ -1,0 +1,46 @@
+cluster_name: ask
+kubernetes_version: "v1.15.2-rancher1-1"
+
+services: 
+  kube-api: 
+    extra_args: 
+      feature-gates: "VolumeSnapshotDataSource=true"
+  kube-controller: 
+    extra_args: 
+      feature-gates: "VolumeSnapshotDataSource=true"
+  kubelet: 
+    extra_args: 
+      feature-gates: "VolumeSnapshotDataSource=true"
+  scheduler: 
+    extra_args: 
+      feature-gates: "VolumeSnapshotDataSource=true"
+  kubeproxy: 
+    extra_args: 
+      feature-gates: "VolumeSnapshotDataSource=true"
+
+nodes:
+    - address: 192.168.122.111
+      user: rke
+      ssh_key_path: ~/.ssh/id_rsa
+      role:
+        - controlplane
+        - etcd
+        - worker
+    - address: 192.168.122.112
+      user: rke
+      ssh_key_path: ~/.ssh/id_rsa
+      role:
+        - worker
+    - address: 192.168.122.113
+      user: rke
+      ssh_key_path: ~/.ssh/id_rsa
+      role:
+        - worker
+    - address: 192.168.122.114
+      user: rke
+      ssh_key_path: ~/.ssh/id_rsa
+      role:
+        - worker
+
+network:
+    plugin: flannel

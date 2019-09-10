@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb
+  name: metallb-config
+data:
+  config: |
+    address-pools:
+    - name: vip-free-for-all-space
+      protocol: layer2
+      addresses:
+      - 192.168.122.214/32

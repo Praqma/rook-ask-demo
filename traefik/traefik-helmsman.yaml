@@ -1,0 +1,18 @@
+namespaces:
+  traefik:
+  metallb:
+
+apps:
+  traefik:
+    namespace: traefik
+    enabled: true
+    chart: stable/traefik
+    version: 1.68.4
+    valuesFile: values-traefik.yaml
+
+  metallb:
+    chart: stable/metallb
+    version: 0.9.5
+    enabled: true
+    namespace: metallb
+
