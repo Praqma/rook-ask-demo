@@ -6,6 +6,8 @@ This repo is used to demo Rook.io and ASK at Code-Conf 2019. The code here will 
 ## Prerequsits
 You need to have a Kubernetes cluster up and running, and helm installed. The code in this repo has been tested on Kubernetes version 1.15.2 with the feature gate ```VolumeSnapshotDataSource=true``` turned on. The cluster used is spun up using Rancher RKE. The ```/rke/cluster.yaml``` file used to create the 4 node cluster can be found in this repo as well. 
 
+> I created and prepared the VM's with my KMV project, found here : https://github.com/hoeghh/rancher-launcher-kvm
+
 Getting Helm up and running is out of scope of this guide. But we expect it to be installed and running. A quick script for getting Helm installed can be found at ```/helm/install-helm.sh```.
 
 In order to use Praqma ASK docker images from the Docker hub, you need to have a secret with credentials named ```docker-hub-credentials``` as the repo is private. the name can be changed in the ```/ask/values.yaml```. The script ```/ask/create-hub-secret.sh``` helps you to create this secret. 
