@@ -32,7 +32,7 @@ The script ```rook/create-blockpool.sh``` create a blockpool for the RWO volumes
 
 ### Creating storageClasses
 
-We need to create a storageclass for both our volumes. One being a Block Storage and the other a Shared file system. The files ```/rook/storageclass-block.yaml``` and ```/rook/storageclass-cephfs.yaml``` contains the storageclass definition and are both deployed via ```  ```
+We need to create a storageclass for both our volumes. One being a Block Storage and the other a Shared file system. The files ```/rook/storageclass-block.yaml``` and ```/rook/storageclass-cephfs.yaml``` contains the storageclass definition and are both deployed via ```/rook/create-storage-classes.sh```
 
 Confirm that the two storageclasses are created
 ```
@@ -70,13 +70,29 @@ Password : jira_password
 Click ```Test Connection``` and you should get the message :
 > The database connection test was successful.
 
-Now click Next.
+Now click ```Next```.
 
 Becaurse Jira stops answering on ```/status``` while setting up the database, it might get not-ready, and the ingress will stop sending traefik. Wait until the Ready state of jira-0 is 1/1 again, then press F5 in the browser. Or, use a portforward to jira-0 and setup jira that way. 
 
-Put the settings you want under Application s properties like the Application Title, Mode and BaseUrl. BaseUrl should be the same as the Ingress value in ```/ask/values.yaml```.
+Put the settings you want under Application properties like the ```Application Title```, ```Mode``` and ```BaseUrl```. ```BaseUrl``` should be the same as the Ingress value in ```/ask/values.yaml```. Click next.
 
+Next, insert a license and click ```Next```.
 
+Again, Jira might stop answering on ```/status``` so have patianse and reload if the browser goes dead.
+
+Next, insert your ```Full name```, ```Email```, ```Username``` and ```Password``` and then click ```Next```.
+
+We dont want to configure an mail server, so keep the ```Later``` option and click ```Finish```.
+
+Choose a language of your preference, and click ```Continue```.
+
+Choose an avatar image and click ```Next```.
+
+Now, click ```Create new project```, choose a template (eg. Kanban) and click next, Select, give it a name and click Submit.
+
+Now Jira is setup. Click the gearknob in the top right corner, and click System. Then click ```System Info```. Search for ```Cluster nodes``` to see that we have a node called ```jira-0.jira.default.svc.cluster.local``` that is Active and alive.
+
+Now we are ready to scale Jira !
 
 ### Creating a snapshot of Jira home
 In order to create snapshots, we need to create a snapshotclass. 
@@ -85,11 +101,56 @@ In the folder ```/snapshot/``` you will find a ```snapshotclass.yaml```. This wi
 There is also a ```snapshot.yaml``` that will create a snapshot of PVC ```jira-persistent-storage-jira-0```. And finally ```restore-snapshot.yaml``` that will create a new PVC named ```jira-persistent-storage-jira-1``` based on the snapshot we created. Run the script ```create-snapshot.sh``` to apply all three objects.
 
 ### Scale Jira
-Now we have a ready PVC for ```jira-1``` to use. So we can simply scale the statefulset that Jira is by running ```kubectl scale statefulset jira --replicas=2```
+Now we have a PVC ready for ```jira-1``` to use. So we can simply scale the statefulset that Jira is, by running ```kubectl scale statefulset jira --replicas=2```
 
-Go to Jira System -> System Information and search for ```cluster```. There should be two nodes active.
+Go to Jira System -> System Information and search for ```Cluster nodes``` again. There should now be two active nodes. (Or refresh the page if you're still there).
 
-You should end up with the following PV
+![Jira Cluster Nodes](media/Jira-DC_active-nodes.png)
+
+And in the footer, we can verify that we are in fact running Jira 8.4.0, and logged in on node Jira-0.
+
+```
+Atlassian Jira Project Management Software (v8.4.0#804001-sha1:a071452:jira-0.jira.default.svc.cluster.local)
+```
+
+You should end up with the following files inside the containers, in the homefolder:
+```
+> kubectl exec -it jira-0 -- ls -l /var/atlassian/application-data/jira/
+total 12
+drwxr-s---. 4 jira jira   46 Sep 12 14:51 caches
+-rw-r--r--. 1 jira jira  617 Sep 12 14:49 cluster.properties
+-rw-r-----. 1 jira jira 1094 Sep 12 14:50 dbconfig.xml
+drwxr-s---. 2 jira jira 4096 Sep 12 15:10 localq
+drwxr-s---. 2 jira jira  131 Sep 12 14:52 log
+drwxr-s---. 2 jira jira   76 Sep 12 14:52 monitor
+drwxr-s---. 6 jira jira  100 Sep 12 14:51 plugins
+drwxr-s---. 3 jira jira   26 Sep 12 14:49 tmp
+
+> kubectl exec -it jira-1 -- ls -l /var/atlassian/application-data/jira/
+total 12
+drwxrws---. 4 jira jira   46 Sep 11 15:47 caches
+-rw-rw-r--. 1 jira jira  617 Sep 12 15:10 cluster.properties
+-rw-rw----. 1 jira jira 1094 Sep 11 15:47 dbconfig.xml
+drwxr-s---. 2 jira jira 4096 Sep 12 15:10 localq
+drwxrws---. 2 jira jira  131 Sep 12 15:11 log
+drwxrws---. 2 jira jira   76 Sep 11 15:49 monitor
+drwxrws---. 6 jira jira  100 Sep 11 15:48 plugins
+drwxrws---. 3 jira jira   26 Sep 11 15:46 tmp
+
+```
+
+The date on the file ```cluster.properties``` should vary as it is modified by our container startup script.
+
+The following Pods should be running
+```
+kubectl get pods
+NAME                                        READY   STATUS    RESTARTS   AGE
+jira-0                                      1/1     Running   0          22m
+jira-1                                      1/1     Running   0          2m9s
+postgres-jira-postgresql-6d8f8cf8b5-qc46d   1/1     Running   0          23m
+```
+
+You should have the following PV's
 ```
 kubectl get pv
 NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                    STORAGECLASS      REASON   AGE
@@ -99,7 +160,7 @@ pvc-df08a37e-05d6-465a-b559-225fb60c84a0   5Gi        RWO            Delete     
 pvc-ff685a9e-df9a-4eda-b9ad-19e1b213246c   5Gi        RWX            Delete           Bound    default/jira-datacenter-pvc              rook-cephfs                21m
 ```
 
-PVC:
+And PVC's:
 ```
 kubectl get pvc
 NAME                             STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS      AGE
@@ -107,13 +168,4 @@ jira-datacenter-pvc              Bound    pvc-ff685a9e-df9a-4eda-b9ad-19e1b21324
 jira-persistent-storage-jira-0   Bound    pvc-7e8d002a-f6a8-4e4b-8b12-5f6f628c0a15   5Gi        RWO            rook-ceph-block   22m
 jira-persistent-storage-jira-1   Bound    pvc-df08a37e-05d6-465a-b559-225fb60c84a0   5Gi        RWO            rook-ceph-block   7m22s
 postgres-jira-postgresql         Bound    pvc-8b6b58b4-7e08-464f-a3b2-46468fa83eb8   8Gi        RWO            rook-ceph-block   22m
-```
-
-Pods
-```
-kubectl get pods
-NAME                                        READY   STATUS    RESTARTS   AGE
-jira-0                                      1/1     Running   0          22m
-jira-1                                      1/1     Running   0          2m12s
-postgres-jira-postgresql-5d5b6bb796-ndsq5   2/2     Running   0          23m
 ```

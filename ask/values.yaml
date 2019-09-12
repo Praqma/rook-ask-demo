@@ -26,7 +26,7 @@ Certs:
 
 Image:
   Name: "praqma/jira"
-  Tag: "8.3.2"
+  Tag: "8.4.0"
   ImagePullPolicy: "Always"
   PrivateRegistry: true
   PullSecret: "docker-hub-credentials"
@@ -41,23 +41,25 @@ EnvVars:
   X_CONTEXT_PATH: ""
   ADDITIONAL_CONNECTOR: "false"
   JAVA_OPTS: ""
-  CATALINA_OPTS: "-Dfile.encoding=UTF-8 -Xms1024m -Xmx1024m"
+  CATALINA_OPTS: "-Dfile.encoding=UTF-8 -Xms2048m -Xmx2048m -Duser.timezone=Europe/Copenhagen"
 
 # livenessProbe:
 #   Path:
 #   Port:
-ReadinessProbe:
+ReadinessProbe: 
   Path: /status
   Port: jira-main
   SuccessThreshold: 1
-  PeriodSeconds: 20
-
+  PeriodSeconds: 30
+  InitialDelaySeconds: 120
+  TimeoutSeconds: 1
+  FailureThreshold: 5
 
 Resources:
-  cpuRequest: 1000m
-  cpuLimit: 2000m
-  memoryRequest: 1024Mi
-  memoryLimit: 2048Mi
+  cpuRequest: 1500m
+  cpuLimit: 2500m
+  memoryRequest: 3072Mi
+  memoryLimit: 4096Mi
 
 SecurityContext: 1000
 

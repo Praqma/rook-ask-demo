@@ -1,4 +1,4 @@
-cluster_name: ask
+cluster_name: rook-ask-demo
 kubernetes_version: "v1.15.2-rancher1-1"
 
 services: 
@@ -36,11 +36,14 @@ nodes:
       ssh_key_path: ~/.ssh/id_rsa
       role:
         - worker
-    - address: 192.168.122.114
-      user: rke
-      ssh_key_path: ~/.ssh/id_rsa
-      role:
-        - worker
+#    - address: 192.168.122.114
+#      user: rke
+#      ssh_key_path: ~/.ssh/id_rsa
+#      role:
+#        - worker
+
+ingress:
+    provider: none
 
 network:
     plugin: flannel
