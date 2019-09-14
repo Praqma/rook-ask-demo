@@ -4,7 +4,7 @@
 This repo is used to demo Rook.io and ASK at Code-Conf 2019. The code here will not be maintained when Code-Conf has passed.
 
 ## Prerequsits
-You need to have a Kubernetes cluster up and running, and helm installed. The code in this repo has been tested on Kubernetes version 1.15.2 with the feature gate ```VolumeSnapshotDataSource=true``` turned on. The cluster used is spun up using Rancher RKE. The ```/rke/cluster.yaml``` file used to create the 4 node cluster can be found in this repo as well. 
+You need to have a Kubernetes cluster up and running, and helm installed. The code in this repository has been tested on Kubernetes version 1.15.2 with the feature gate ```VolumeSnapshotDataSource=true``` turned on. The cluster used is spun up using Rancher RKE. The ```/rke/cluster.yaml``` file used to create the 4 node cluster can be found in this repository as well. 
 
 > I created and prepared the VM's with my KMV project, found here : https://github.com/hoeghh/rancher-launcher-kvm
 
@@ -25,12 +25,12 @@ Use ```kubectl get pods -n rook-ceph``` command to see when Rook is ready before
 
 When the Rook Operator is deployed and ready we can create our Ceph cluster. The Rook team have a ```cluster-test.yaml``` we can use for quick test purposes. The script ```/rook/create-ceph-test-cluster.sh``` can be used to deploy it.
 
-Again, use ```kubectl get pods -n rook-ceph``` command to see when the Ceph pods are ready before continouing. 
+Again, use ```kubectl get pods -n rook-ceph``` command to see when the Ceph pods are ready before continuing. 
 
 ### Creating file systems
 For both the block and shared filesystem we need to create a storage pool in our Ceph cluster.
 
-The script ```rook/create-blockpool.sh``` create a blockpool for the RWO volumes and ```rook/create-cephfilesystem.sh``` create the filesystem for the shared filsystem used by our RWX volume.
+The script ```rook/create-blockpool.sh``` create a blockpool for the RWO volumes and ```rook/create-cephfilesystem.sh``` create the filesystem for the shared filesystem used by our RWX volume.
 
 ### Creating storageClasses
 
@@ -46,7 +46,7 @@ rook-cephfs       rook-ceph.cephfs.csi.ceph.com   4s
 
 ## Postgres setup
 ### Deploying Postgresql
-Postgres is needed by Jira to work, so we have a small script ```/postgres/deploy-postgres.sh``` that deploys a suported version using the Block storage from Rook we created above. 
+Postgres is needed by Jira to work, so we have a small script ```/postgres/deploy-postgres.sh``` that deploys a supported version using the Block storage from Rook we created above. 
 
 ## Jira setup
 ### Deploying Jira Data Center
@@ -59,7 +59,7 @@ Now, a pod should be created with the name ```jira-0```.
 ### Configure Jira
 Open a browser and go to ```http://jira.192.168.122.214.nip.io``` and click on ```I'll set it up myself```, and then next.
 
-Choose ```My Own Database```, select ```PostgreSQL``` as database type. Hostname for postgres should be ```postgres-jira-postgresql.default.svc.cluster.local```, Database should be ```jira```, Username should be ```jirauser``` and password is ```jira_password``` as defined in ```/postgres/deploy-postgres.sh``` we ran earlier.
+Choose ```My Own Database```, select ```PostgreSQL``` as database type. Hostname for Postgres should be ```postgres-jira-postgresql.default.svc.cluster.local```, Database should be ```jira```, Username should be ```jirauser``` and password is ```jira_password``` as defined in ```/postgres/deploy-postgres.sh``` we ran earlier.
 
 ```
 Hostname : postgres-jira-postgresql.default.svc.cluster.local
@@ -74,7 +74,7 @@ Click ```Test Connection``` and you should get the message :
 
 Now click ```Next```.
 
-Becaurse Jira stops answering on ```/status``` while setting up the database, it might get not-ready, and the ingress will stop sending traefik. Wait until the Ready state of jira-0 is 1/1 again, then press F5 in the browser. Or, use a portforward to jira-0 and setup jira that way. 
+Because Jira stops answering on ```/status``` while setting up the database, it might get not-ready, and the ingress will stop sending traefik. Wait until the Ready state of jira-0 is 1/1 again, then press F5 in the browser. Or, use a portforward to jira-0 and setup jira that way. 
 
 Put the settings you want under Application properties like the ```Application Title```, ```Mode``` and ```BaseUrl```. ```BaseUrl``` should be the same as the Ingress value in ```/ask/values.yaml```. Click next.
 
@@ -84,7 +84,7 @@ Again, Jira might stop answering on ```/status``` so have patianse and reload if
 
 Next, insert your ```Full name```, ```Email```, ```Username``` and ```Password``` and then click ```Next```.
 
-We dont want to configure an mail server, so keep the ```Later``` option and click ```Finish```.
+We don't want to configure an mail server, so keep the ```Later``` option and click ```Finish```.
 
 Choose a language of your preference, and click ```Continue```.
 
