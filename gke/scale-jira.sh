@@ -19,20 +19,22 @@ EOF
 }
 
 delete_snapshot() {
+  echo "Deleting old snapshot leftover from previous scale run..."
   local old_snap=$(kubectl get VolumeSnapshot -o jsonpath="{.items[*].metadata.name}" | grep -o 'jira-home-snapshot')
   if [ "$old_snap" == "jira-home-snapshot" ]; then
-      kubectl delete volumeSnapshot jira-home-snapshot
+      kubectl delete volumeSnapshot jira-home-snapshot > /dev/null 2>&1
   fi
 }
 
 create_snapshot() {
+  echo "Creating fresh snapshot of jira-0 home directory..."
   local base_pvc=$1
 
   # Apply any changes to snapshot class yaml file.
-  kubectl apply -f snapshotclass.yaml
+  kubectl apply -f snapshotclass.yaml > /dev/null 2>&1
 
   # Create a snapshot of the pvc
-  kubectl apply -f - << EOF
+  kubectl apply -f > /dev/null 2>&1 - << EOF
 apiVersion: snapshot.storage.k8s.io/v1alpha1
 kind: VolumeSnapshot
 metadata:
@@ -93,11 +95,6 @@ generate_pvcs() {
   local POD_ARRAY=()
   POD_ARRAY=($(kubectl get pods -o jsonpath="{.items[*].metadata.name}" | grep -o "jira-[[:digit:]]"))
 
-  echo "Current pods:"
-  for i in "${POD_ARRAY[@]}"; do
-    echo "$i"
-  done
-
   create_snapshot "$PVC_PREFIX-$STATEFULSET-0"
 
   for (( i = SCALE_VALUE; i > 0; i-- )); do
@@ -107,7 +104,6 @@ generate_pvcs() {
     next_pod_number=$((last_pod_number + 1))
     POD_ARRAY+=("$STATEFULSET-$next_pod_number")
     PVC_ARRAY+=("$PVC_PREFIX-$STATEFULSET-$next_pod_number")
-    #echo "Adding pvc: $PVC_PREFIX-$STATEFULSET-$next_pod_number"
     create_pvc "$PVC_PREFIX-$STATEFULSET-$next_pod_number"
   done
 }
