@@ -1,0 +1,17 @@
+dashboard:
+  enabled: true
+  serviceType: NodePort
+serviceType: LoadBalancer
+loadBalancerIP: "35.241.242.164"
+debug:
+  enabled: true
+service:
+  nodePorts:
+    http: 30080
+    #https: 30443
+rbac:
+  enabled: true
+metrics:
+  prometheus:
+    enabled: false
+
