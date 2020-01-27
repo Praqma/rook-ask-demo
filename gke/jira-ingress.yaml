@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: jira-ingress
+  labels:
+    app: jira
+spec:
+  rules:
+    - host: jira.softica.dk
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: jira-service-main
+              servicePort: jira-main

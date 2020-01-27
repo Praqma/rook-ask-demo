@@ -13,7 +13,6 @@ RBAC:
 
 Datacenter:
   Enabled: true
-  GKE: true
 
 # to add certs inside the docker container
 Certs:
@@ -36,7 +35,7 @@ ContainerPort: 8080
 TerminationGracePeriodSeconds: 50
 
 EnvVars:
-  X_PROXY_NAME: ""
+  X_PROXY_NAME: "jira.softica.dk"
   X_PROXY_PORT: "80"
   X_PROXY_SCHEME: "http"
   X_CONTEXT_PATH: ""
@@ -68,7 +67,7 @@ Persistence:
    # define volume claim template.
    VolumeClaimTemplates:
      AccessModes: ReadWriteOnce
-     Storage: 100Gi
+     Storage: 20Gi
      StorageClassName: rook-ceph-block 
      Selector:
        Enabled: false
@@ -97,16 +96,13 @@ PodDisruption:
   MinAvailable: 1
 
 Service:
-  Type: LoadBalancer
+  Type: ClusterIP
   Port: 8080
   Protocol: TCP
-  #Annotations:
-  #  traefik.ingress.kubernetes.io/affinity: "true"
-  #  traefik.ingress.kubernetes.io/session-cookie-name: "JESESSIONID"
 
 Ingress:
-  Enabled: true
-  Host: rook-ask.praqma.com
+  Enabled: false
+  Host: jira.softica.dk
   ServicePort: 8080
 
 # to add promethues annotations

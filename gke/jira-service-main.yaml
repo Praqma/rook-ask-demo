@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/affinity: "true"
+    traefik.ingress.kubernetes.io/session-cookie-name: JESESSIONID
+  labels:
+    app_name: jira
+  name: jira-service-main
+spec:
+  ports:
+    - name: jira-main
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: jira
+  type: NodePort
