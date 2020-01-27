@@ -26,10 +26,10 @@ EOF
 create_cluster() {
   gcloud beta container clusters create --quiet $CLUSTER_NAME \
   --enable-kubernetes-alpha \
-  --cluster-version 1.15.4-gke.22 \
-  --zone europe-north1-b \
+  --cluster-version 1.15.7-gke.23 \
+  --zone europe-west1-b \
   --image-type ubuntu \
-  --machine-type n1-standard-2 \
+  --machine-type n1-standard-4 \
   --num-nodes $NUM_NODES \
   --disk-type "pd-standard" \
   --disk-size $DISK_SIZE \
@@ -42,7 +42,7 @@ create_cluster() {
 }
 
 delete_cluster(){
-  gcloud container clusters delete $CLUSTER_NAME
+  gcloud container clusters delete $CLUSTER_NAME --zone europe-west1-b
 }
 
 OPTIND=1
