@@ -11,11 +11,11 @@ metadata:
 spec:
   metadataPool:
     replicated:
-      size: 3
+      size: 1
   dataPools:
     - failureDomain: osd
       replicated:
-        size: 3
+        size: 1
   preservePoolsOnDelete: false
   metadataServer:
     activeCount: 1
