@@ -28,5 +28,5 @@ parameters:
     csi.storage.k8s.io/fstype: ext4
 # uncomment the following to use rbd-nbd as mounter on supported nodes
 #mounter: rbd-nbd
-reclaimPolicy: Retain
+reclaimPolicy: Delete
 allowVolumeExpansion: true
