@@ -26,7 +26,7 @@ EOF
 create_cluster() {
   gcloud beta container clusters create --quiet $CLUSTER_NAME \
   --enable-kubernetes-alpha \
-  --cluster-version 1.15.7-gke.23 \
+  --cluster-version 1.15.8-gke.2 \
   --zone europe-west1-b \
   --image-type ubuntu \
   --machine-type n1-standard-4 \
