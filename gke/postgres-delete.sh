@@ -1,5 +1,5 @@
 #!/bin/bash
 
-helm delete postgres-jira
+helm delete jiradb
 sleep 5
-kubectl delete pvc data-postgres-jira-postgresql-0
+kubectl delete pvc data-jiradb-postgresql-0
